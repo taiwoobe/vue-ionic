@@ -8,8 +8,10 @@
         <ion-title>New Item</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content>
+    <ion-content class="ion-padding">
         <ion-icon :icon="heart"></ion-icon>
+        <img :src="photo" alt=""/>
+        <ion-button @click="takePhoto()"> Take Photo </ion-button>
     </ion-content>
   </ion-page>
 </template>
@@ -25,7 +27,9 @@ import {
   IonToolbar
 } from '@ionic/vue';
 import { heart } from "ionicons/icons";
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
+import { Plugins, CameraResultType } from "@capacitor/core";
+const { Camera } = Plugins;
 
 export default defineComponent({
   name: 'NewItem',
@@ -39,7 +43,16 @@ export default defineComponent({
     IonToolbar
   },
   setup() {
-      return { heart }
+    const imageSrc = ref("");
+    const takePhoto = async () => {
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: true,
+        resultType: CameraResultType.Uri
+      });
+      imageSrc.value = image.webPath;
+    }
+    return { heart, photo: imageSrc, takePhoto }
   }
 });
 </script>
